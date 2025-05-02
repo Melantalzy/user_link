@@ -25,7 +25,7 @@ scipy==1.10.1           # 添加 scipy
 torch==1.13.1           # 添加 torch
 tqdm==4.64.0            # 添加 tqdm
 transformers==4.25.0    # 添加 transformers
-typing-extensions==4.5.0  # 添加 typing-extensions
+typing-extensions>=4.7,<5
 
 # Deployment
 whitenoise==6.7.0
