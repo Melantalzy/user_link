@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>User Detail</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ user_speech.email }}</p>
+            <p><strong>Comment:</strong> {{ user_speech.comment }}</p>
+            <p><strong>Embedding (部分展示):</strong> {{ user_speech.embedding|slice:":5" }} ...</p>
+
+            <!-- 返回按钮 -->
+            <a href="{% url 'user_list' %}" class="btn btn-secondary">Back to User List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>All Users</h3>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                {% for user in users %}
+                    <li class="list-group-item">
+                        {{ user.email }} -
+                        <a href="{% url 'user_detail' user.id %}">View Details</a>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No users found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

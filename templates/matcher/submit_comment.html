@@ -1,0 +1,95 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt--7">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Find Similar Comments</h3>
+                </div>
+                <div class="card-body">
+                    <!-- 用户输入评论的文本框 -->
+                    <div class="form-group">
+                        <label for="user-comment">Enter your comment</label>
+                        <textarea id="user-comment" class="form-control" rows="4" placeholder="Type your comment here"></textarea>
+                    </div>
+                    <button id="submit-btn" class="btn btn-primary">Find Most Similar Comments</button>
+                </div>
+            </div>
+
+            <!-- 显示相似用户的区域 -->
+            <div id="similar-comment-result" class="alert alert-info mt-4" style="display:none;">
+                <h5>Most Similar Users:</h5>
+                <ul id="similar-users-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 点击提交按钮时
+    document.getElementById('submit-btn').addEventListener('click', function() {
+        const userComment = document.getElementById('user-comment').value;
+
+        if (userComment) {
+            // 发送 AJAX 请求
+            fetch('/find_similar_comment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')  // 添加 CSRF token
+                },
+                body: JSON.stringify({ comment: userComment })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('similar-comment-result');
+                const usersList = document.getElementById('similar-users-list');
+                usersList.innerHTML = ''; // 清空旧数据
+
+                if (data.top_users && data.top_users.length > 0) {
+                    data.top_users.forEach(user => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item';
+
+                        // 每个用户是一个超链接，跳到 /user/<id>/ 页面
+                        listItem.innerHTML = `
+                            <a href="/user/${user.id}/">
+                                <strong>Email:</strong> ${user.email}<br>
+                                <strong>Comment:</strong> ${user.comment}<br>
+                                <strong>Similarity:</strong> ${user.similarity}
+                            </a>
+                        `;
+                        usersList.appendChild(listItem);
+                    });
+
+                    resultDiv.style.display = 'block';
+                } else {
+                    alert("No similar users found.");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            alert("Please enter a comment.");
+        }
+    });
+
+    // 获取 CSRF Token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+{% endblock %}
