@@ -2,18 +2,68 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header">
-            <h3>User Detail</h3>
-        </div>
-        <div class="card-body">
-            <p><strong>Email:</strong> {{ user_speech.email }}</p>
-            <p><strong>Comment:</strong> {{ user_speech.comment }}</p>
-            <p><strong>Embedding (部分展示):</strong> {{ user_speech.embedding|slice:":5" }} ...</p>
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow border-0">
+                <!-- 顶部头像信息 -->
+                <div class="card-header text-center bg-gradient-primary text-white py-4">
+                    <div class="mb-2">
+                        <i class="fas fa-user-circle fa-4x"></i>
+                    </div>
+                    <h3 class="mb-0">用户详情</h3>
+                    <small class="text-light">邮箱信息与评论内容概览</small>
+                </div>
 
-            <!-- 返回按钮 -->
-            <a href="{% url 'user_list' %}" class="btn btn-secondary">Back to User List</a>
+                <!-- 主体内容 -->
+                <div class="card-body px-5 py-4">
+                    <!-- 用户邮箱 -->
+                    <div class="mb-4">
+                        <h5><i class="fas fa-id-badge me-2 text-secondary"></i><strong>邮箱地址</strong></h5>
+                        <div class="bg-light border rounded p-3">
+                            <span class="text-muted">{{ user_speech.email }}</span>
+                        </div>
+                    </div>
+
+                    <!-- 评论内容 -->
+                    <div class="mb-4">
+                        <h5><i class="fas fa-comment-dots me-2 text-secondary"></i><strong>提交的评论内容</strong></h5>
+                        <div class="p-4 bg-white border rounded shadow-sm" style="white-space: pre-line; font-size: 1.15rem; line-height: 1.8; color: #343a40;">
+                            {{ comment_text }}
+                        </div>
+                    </div>
+
+                    <!-- 评论统计与标签 -->
+                    <div class="mb-4">
+                        <h6 class="text-muted">用户参与度摘要</h6>
+                        <div class="d-flex flex-wrap gap-3">
+                            <span class="badge bg-info text-dark p-2"><i class="fas fa-pencil-alt me-1"></i> 评论长度：{{ comment_text|length }} 字符</span>
+                            <span class="badge bg-warning text-dark p-2"><i class="fas fa-lightbulb me-1"></i> 洞察评分：高</span>
+                            <span class="badge bg-success text-white p-2"><i class="fas fa-check-circle me-1"></i> 已验证用户</span>
+                        </div>
+                    </div>
+
+                    <!-- 返回按钮 -->
+                    <div class="text-center mt-5">
+                        {% if referer_page == 'submit_comment' %}
+                            <a href="{% url 'submit_comment' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>返回提交评论页
+                            </a>
+                        {% elif referer_page == 'upload_comments' %}
+                            <a href="{% url 'upload_comments' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>返回上传评论页
+                            </a>
+                        {% else %}
+                            <a href="{% url 'user_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>返回用户列表
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- 引入图标库 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 {% endblock %}

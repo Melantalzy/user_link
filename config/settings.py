@@ -15,6 +15,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from str2bool import str2bool
 
+
+
 load_dotenv()  # take environment variables from .env.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,6 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+
+SENTENCE_TRANSFORMER_MODEL_PATH = os.path.join(BASE_DIR, 'model', 'finetuned_model_v1')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -53,6 +57,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    'corsheaders',
     # Serve UI pages
     "apps.pages",
 
@@ -81,11 +86,15 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
 
 UI_TEMPLATES = os.path.join(BASE_DIR, 'templates')
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {

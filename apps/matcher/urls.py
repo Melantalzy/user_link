@@ -8,4 +8,8 @@ urlpatterns = [
     path('users/', views.user_list, name='user_list'),
     path('user/<int:user_id>/', views.user_detail, name='user_detail'),
     path('user_list/', views.user_list, name='user_list'),
+    path('user_entity/<int:user_id>/', views.build_user_entity_graph, name='build_user_entity_graph'),
+
+
+    path('api/simple_test/', views.simple_test_view, name='simple_test'),
 ]

@@ -1,35 +1,40 @@
 {% extends "layouts/base.html" %}
 
 {% block content %}
-<div class="container-fluid mt--7">
+<div class="container-fluid mt-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="mb-0">Upload Comments and Find Similar Users</h3>
+        <div class="col-lg-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-gradient-primary text-white text-center py-4">
+                    <h3 class="mb-0">上传评论并查找相似用户</h3>
+                    <small class="text-light">支持 JSON 文件，一键上传并展示相似用户</small>
                 </div>
                 <div class="card-body">
-                    <!-- 上传 JSON 文件的表单 -->
-                    <div class="form-group">
-                        <label for="file">Select JSON file</label>
+                    <!-- 上传 JSON 文件表单 -->
+                    <div class="form-group mb-4">
+                        <label for="file" class="form-label"><strong>选择 JSON 文件</strong></label>
                         <input type="file" id="file" name="file" class="form-control" accept=".json" required>
                     </div>
-                    <button id="upload-btn" class="btn btn-primary">Upload File</button>
+                    <div class="text-center">
+                        <button id="upload-btn" class="btn btn-primary px-4">
+                            <i class="fas fa-upload me-2"></i>上传文件
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 显示相似用户的区域 -->
-            <div id="similar-comment-result" class="alert alert-info mt-4" style="display:none;">
-                <h5>Most Similar Users:</h5>
-                <ul id="similar-users-list" class="list-group"></ul>
+            <!-- 相似用户结果展示 -->
+            <div id="similar-comment-result" class="mt-5" style="display:none;">
+                <h5 class="text-info mb-4"><i class="fas fa-users me-2"></i>最相似的用户</h5>
+                <div id="similar-users-list" class="row gy-4"></div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- JavaScript -->
 <script>
-    // 点击上传按钮时
-    document.getElementById('upload-btn').addEventListener('click', function() {
+    document.getElementById('upload-btn').addEventListener('click', function () {
         const fileInput = document.getElementById('file');
         const file = fileInput.files[0];
 
@@ -37,44 +42,53 @@
             const formData = new FormData();
             formData.append('file', file);
 
-            // 发送 AJAX 请求
             fetch('/upload_comments/', {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': getCookie('csrftoken')  // 添加 CSRF token
+                    'X-CSRFToken': getCookie('csrftoken')
                 }
             })
             .then(response => response.json())
             .then(data => {
                 const resultDiv = document.getElementById('similar-comment-result');
                 const usersList = document.getElementById('similar-users-list');
-                usersList.innerHTML = ''; // 清空旧数据
+                usersList.innerHTML = '';
 
                 if (data.top_users && data.top_users.length > 0) {
                     data.top_users.forEach(user => {
-                        const listItem = document.createElement('li');
-                        listItem.className = 'list-group-item';
+                        const userCard = document.createElement('div');
+                        userCard.className = 'col-md-12';
 
-                        // 每个用户是一个超链接，跳到 /user/<id>/ 页面
-                        listItem.innerHTML = `
-                            <a href="/user/${user.id}/">
-                                <strong>Email:</strong> ${user.email}<br>
-                                <strong>Comment:</strong> ${user.comment}<br>
-                                <strong>Similarity:</strong> ${user.similarity}
-                            </a>
+                        userCard.innerHTML = `
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary"><i class="fas fa-user-circle me-2"></i>${user.email}</h5>
+                                    <hr>
+                                    <div class="mb-3" style="white-space: pre-line; font-size: 1.05rem; line-height: 1.75; color: #343a40;">
+                                        <strong class="text-secondary">评论内容：</strong><br>
+                                        ${user.comment}
+                                    </div>
+                                    <div class="text-muted mb-2">
+                                        <strong>相似度：</strong> ${parseFloat(user.similarity).toFixed(4)}
+                                    </div>
+                                    <a href="/user/${user.id}/" class="btn btn-outline-primary btn-sm">
+                                        查看用户详情
+                                    </a>
+                                </div>
+                            </div>
                         `;
-                        usersList.appendChild(listItem);
+                        usersList.appendChild(userCard);
                     });
 
                     resultDiv.style.display = 'block';
                 } else {
-                    alert("No similar users found.");
+                    alert("未找到相似用户。");
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('上传失败：', error));
         } else {
-            alert("Please select a file.");
+            alert("请先选择一个 JSON 文件再上传。");
         }
     });
 
@@ -95,5 +109,6 @@
     }
 </script>
 
+<!-- Font Awesome 引入 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 {% endblock %}
-``
